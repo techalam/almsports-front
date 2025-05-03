@@ -1,3 +1,4 @@
+import { Backdrop, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -15,6 +16,7 @@ function CatalougeModal({
 }) {
   const user = useSelector((state) => state.auth);
   const [catalougeName, setCatalougeName] = useState('');
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (selectedCatalouge) {
@@ -32,6 +34,7 @@ function CatalougeModal({
     }
 
     try {
+      setOpen(true);
       const response = await axios.post(
         'https://almsports-node-techalams-projects.vercel.app/api/catalouges/createCatalouge',
         { name: catalougeName },
@@ -52,6 +55,9 @@ function CatalougeModal({
       console.error('Error saving catalouge:', error);
       Swal.fire('Error', error?.response?.data?.error || 'Could not save catalouge', 'error');
     }
+    finally {
+      setOpen(false);
+    }
   };
 
   const updateCatalouge = async (e) => {
@@ -62,6 +68,7 @@ function CatalougeModal({
     }
 
     try {
+      setOpen(true);
       const response = await axios.put(
         'https://almsports-node-techalams-projects.vercel.app/api/catalouges/updateCatalouge',
         {
@@ -87,9 +94,13 @@ function CatalougeModal({
       console.error('Error updating catalouge:', error);
       Swal.fire('Error', error?.response?.data?.error || 'Could not update catalouge', 'error');
     }
+    finally {
+      setOpen(false);
+    }
   };
 
   return (
+    <>
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>{selectedCatalouge ? 'Edit Catalouge' : 'Add Catalouge'}</Modal.Title>
@@ -135,6 +146,17 @@ function CatalougeModal({
         </Button>
       </Modal.Footer>
     </Modal>
+
+    <Backdrop
+      sx={{
+        color: "#fff",
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
+      open={open}
+    >
+      <CircularProgress color="inherit" />
+    </Backdrop>
+    </>
   );
 }
 

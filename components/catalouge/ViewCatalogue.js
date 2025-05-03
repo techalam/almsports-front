@@ -70,15 +70,66 @@ const ViewCatalogue = ({ id }) => {
       </Form>
 
       {loading ? (
-        <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-        </div>
+        <Row
+            style={{
+              flexWrap: "wrap",
+              overflow: "auto",
+            }}
+            xs={1}
+            sm={2}
+            md={3}
+            lg={4}
+            className="mt-2 g-4 d-flex align-items-center justify-content-between"
+          >
+        {[...Array(6)].map((_, index) => (
+                <Col
+                  xs={5}
+                  sm={5}
+                  md={5}
+                  lg={5}
+                  key={index}
+                  style={{ height: "200px" }}
+                  className="shadow-sm rounded-3 m-2 border-0"
+                >
+                  <div
+                    className="skeleton-img mb-2"
+                    style={{
+                      height: "120px",
+                      width: "90%",
+                      backgroundColor: "#e0e0e0",
+                      borderRadius: "4px",
+                      margin: "0 auto",
+                    }}
+                  ></div>
+                  <div
+                    className="skeleton-text mb-1"
+                    style={{
+                      height: "20px",
+                      width: "80%",
+                      backgroundColor: "#e0e0e0",
+                      borderRadius: "4px",
+                      margin: "0 auto",
+                    }}
+                  ></div>
+                  <div
+                    className="skeleton-text"
+                    style={{
+                      height: "20px",
+                      width: "40%",
+                      backgroundColor: "#e0e0e0",
+                      borderRadius: "4px",
+                      margin: "0 auto",
+                    }}
+                  ></div>
+                </Col>
+              ))}
+              </Row>
       ) : groupedProducts.length === 0 ? (
         <p>No products found in this catalogue.</p>
       ) : (
         groupedProducts.map((group) => (
           <div key={group.name} className="mb-5">
-            <h4>{group.name}</h4>
+            <h4 style={{color: '#185a9d'}}>{group.name}</h4>
             <Row
               style={{
                 flexWrap: rowsOpen[group?.name] ? "wrap" : "nowrap",

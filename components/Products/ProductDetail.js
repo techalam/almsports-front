@@ -8,12 +8,14 @@ import { useSelector } from "react-redux";
 
 const ProductDetail = () => {
   const router = useRouter();
-  const id = router?.query?.id; // expects route like /product/:id
+  const id = router?.query?.id;
   const [product, setProduct] = useState(null);
   const user = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
 
   const getProductDetails = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `https://almsports-node-techalams-projects.vercel.app/api/products/productsById?id=${id}`
       );
@@ -26,6 +28,9 @@ const ProductDetail = () => {
         text: error?.response?.data?.error || "Failed to load product.",
       });
     }
+    finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -33,15 +38,29 @@ const ProductDetail = () => {
     getProductDetails();
   }, [id]);
 
-  if (!product) {
-    return <div className="text-center mt-5">Loading product...</div>;
+  // 🟡 Show skeleton if loading
+  if (loading) {
+    return (
+      <Container className="mt-4">
+        <Row>
+          <Col md={6}>
+            <div className="skeleton-box" style={{ height: "400px", width: "100%" }} />
+          </Col>
+          <Col md={6} className="mt-3">
+            <div className="skeleton-line" style={{ width: "70%", height: "30px", marginBottom: "10px" }} />
+            <div className="skeleton-line" style={{ width: "100%", height: "80px", marginBottom: "10px" }} />
+            <div className="skeleton-line" style={{ width: "30%", height: "25px" }} />
+          </Col>
+        </Row>
+      </Container>
+    );
   }
 
   // If images are stored as a comma-separated string, split it
-  const imageList = product.images
-    ? Array.isArray(product.images)
-      ? product.images
-      : product.images.split(",")
+  const imageList = product?.images
+    ? Array.isArray(product?.images)
+      ? product?.images
+      : product?.images.split(",")
     : ["https://via.placeholder.com/600x400"];
 
   return (
@@ -57,7 +76,7 @@ const ProductDetail = () => {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    backgroundColor: "#f9f9f9", // Optional: nice fallback background
+                    backgroundColor: "#f9f9f9",
                   }}
                 >
                   <Image
@@ -70,8 +89,8 @@ const ProductDetail = () => {
                       objectFit: "contain",
                     }}
                     onError={(e) => {
-                      e.target.onerror = null; // Prevent infinite loop if fallback fails
-                      e.target.src = "./images/noImg.webp"; // Fallback image
+                      e.target.onerror = null;
+                      e.target.src = "./images/noImg.webp";
                     }}
                   />
                 </div>
@@ -81,11 +100,11 @@ const ProductDetail = () => {
         </Col>
 
         <Col md={6}>
-          <h2>{product.name}</h2>
+          <h2>{product?.name}</h2>
           <p style={{ wordBreak: "break-all" }} className="text-muted">
-            {product.description || "No description available."}
+            {product?.description || "No description available."}
           </p>
-          <h4>Rs: {product.price}</h4>
+          <h4>Rs: {product?.price}</h4>
         </Col>
       </Row>
     </Container>

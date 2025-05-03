@@ -19,7 +19,10 @@ const ProductsComponent = () => {
   const user = useSelector((state) => state.auth);
   const [collections, setCollections] = useState([]);
   const [selectedCollection, setSelectedCollection] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  console.log("user is", user);
+  
   // Open the modal for adding a new product
   const handleAddProduct = () => {
     setSelectedProduct(null);
@@ -72,14 +75,12 @@ const ProductsComponent = () => {
   // Fetch all products with pagination and search
   const getAllProducts = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         `https://almsports-node-techalams-projects.vercel.app/api/products/products?category=${
           selectedCollection || ""
         }`,
         {
-          headers: {
-            Authorization: `Bearer ${user?.accessToken}`,
-          },
           params: {
             limit: productsPerPage,
             offset: (currentPage - 1) * productsPerPage,
@@ -97,17 +98,16 @@ const ProductsComponent = () => {
         text: error?.response?.data?.error || "Error fetching products!",
       });
     }
+    finally {
+      setLoading(false);
+    }
+
   };
 
   const getAllCollections = async () => {
     try {
       const response = await axios.get(
-        "https://almsports-node-techalams-projects.vercel.app/api/products/collections",
-        {
-          headers: {
-            Authorization: `Bearer ${user?.accessToken}`,
-          },
-        }
+        "https://almsports-node-techalams-projects.vercel.app/api/products/collections"
       );
       console.log("All collections:", response.data);
       const collectionData = response?.data?.map((collection) => ({
@@ -143,13 +143,14 @@ const ProductsComponent = () => {
   }, [searchTerm, currentPage, selectedCollection]);
 
   useEffect(() => {
-    getAllCollections();
+      getAllCollections();
   }, []);
 
   return (
     <>
       <Row className="d-flex justify-content-between align-items-center px-3">
         <h5 style={{ width: "auto", margin: 0, padding: 0 }}>Products</h5>
+        {user?.user && (
         <Button
           size="sm"
           variant="primary"
@@ -159,6 +160,7 @@ const ProductsComponent = () => {
         >
           <FiPlus /> &nbsp;Add New
         </Button>
+          )}
       </Row>
 
       {/* Search Input */}
@@ -172,7 +174,10 @@ const ProductsComponent = () => {
       <Row className="d-flex justify-content-end align-items-center mt-2 px-3">
         <Select
           value={selectedCollection}
-          onChange={(e) => setSelectedCollection(e.target.value)}
+          onChange={(e) => {
+            setSelectedCollection(e.target.value);
+            setCurrentPage(1); // Reset to page 1 on collection change
+          }}
           style={{ width: "50%", height: "30px" }}
           className="m-0 p-0"
           displayEmpty // Optional: to show "All" when no selection
@@ -187,56 +192,106 @@ const ProductsComponent = () => {
       </Row>
 
       {/* Products List */}
-      <Row style={{
-                flexWrap: "wrap",
-                overflow: "auto",
-              }} className="mt-2 g-4 d-flex wrap align-items-center justify-content-center" xs={1}
-              sm={2}
-              md={3}
-              lg={4}>
-        {products.map((product) => (
-          <Col
-            xs={5}
-            sm={5}
-            md={5}
-            lg={5}
-            key={product.id}
-            style={{ height: "200px", cursor: "pointer" }}
-            onClick={() => {
-              router.push(`/productDetails?id=${product.id}`);
+      <Row
+  style={{
+    flexWrap: "wrap",
+    overflow: "auto",
+  }}
+  className="mt-2 g-4 d-flex wrap align-items-center justify-content-center"
+  xs={1}
+  sm={2}
+  md={3}
+  lg={4}
+>
+  {loading
+    ? 
+    [...Array(6)].map((_, index) => (
+        <Col
+          xs={5}
+          sm={5}
+          md={5}
+          lg={5}
+          key={index}
+          style={{ height: "200px" }}
+          className="shadow-sm rounded-3 m-2 border-0"
+        >
+          <div
+            className="skeleton-img mb-2"
+            style={{
+              height: "120px",
+              width: "90%",
+              backgroundColor: "#e0e0e0",
+              borderRadius: "4px",
+              margin: "0 auto",
             }}
-            className="shadow-sm rounded-3 m-2 border-0"
-          >
-            <Image
-             style={{
+          ></div>
+          <div
+            className="skeleton-text mb-1"
+            style={{
+              height: "20px",
+              width: "80%",
+              backgroundColor: "#e0e0e0",
+              borderRadius: "4px",
+              margin: "0 auto",
+            }}
+          ></div>
+          <div
+            className="skeleton-text"
+            style={{
+              height: "20px",
+              width: "40%",
+              backgroundColor: "#e0e0e0",
+              borderRadius: "4px",
+              margin: "0 auto",
+            }}
+          ></div>
+        </Col>
+      ))
+    : products.map((product) => (
+        <Col
+          xs={5}
+          sm={5}
+          md={5}
+          lg={5}
+          key={product.id}
+          style={{ height: "200px", cursor: "pointer" }}
+          onClick={() => {
+            router.push(`/productDetails?id=${product.id}`);
+          }}
+          className="shadow-sm rounded-3 m-2 border-0"
+        >
+          <Image
+            style={{
               height: "120px",
               width: "90%",
               objectFit: "contain",
             }}
-              src={
-                (product.images && product.images[0]) || "./images/noImg.webp"
-              }
-              onError={(e) => {
-                e.target.onerror = null; // Prevent infinite loop if fallback fails
-                e.target.src = "./images/noImg.webp"; // Fallback image
-              }}
-            />
-            <h6
-              style={{
-                fontWeight: "lighter",
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {product.name}
-            </h6>
-            <h6>Rs: {product.price}</h6>
-          </Col>
-        ))}
-      </Row>
+            src={
+              (product.images && product.images[0]) ||
+              "./images/noImg.webp"
+            }
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "./images/noImg.webp";
+            }}
+          />
+          <h6
+            style={{
+              fontWeight: "lighter",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {product.name}
+          </h6>
+          <h6>Rs: {product.price}</h6>
+        </Col>
+      ))}
+</Row>
+
 
       {/* Pagination Controls */}
       <div className="d-flex justify-content-between mt-3">

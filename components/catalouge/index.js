@@ -24,6 +24,7 @@ const Catalouge = () => {
   const [catalouges, setCatalouges] = useState([]);
   const [selectedCatalouge, setSelectedCatalouge] = useState(null);
   const [showToast, setShowToast] = useState(false);
+  const [loading, setLoading] = useState(false);
   const user = useSelector((state) => state.auth);
   const router = useRouter();
 
@@ -36,6 +37,7 @@ const Catalouge = () => {
 
   const getAllCatalouges = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         "https://almsports-node-techalams-projects.vercel.app/api/catalouges/catalouges",
         {
@@ -48,6 +50,9 @@ const Catalouge = () => {
     } catch (error) {
       console.error("Error fetching catalouges:", error);
       Swal.fire("Error", "Could not fetch catalouges", "error");
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -93,7 +98,7 @@ const Catalouge = () => {
   };
 
   const handleCopy = (id) => {
-    const textToCopy = `http://localhost:3000/viewCatalogue?id=${id}`;
+    const textToCopy = `https://almsports-front.vercel.app/viewCatalogue?id=${id}`;
 
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard
@@ -184,7 +189,10 @@ const Catalouge = () => {
           variant="primary"
           onClick={handleShow}
           className="mt-2"
-          style={{ width: "35%", background: 'linear-gradient(135deg, #43cea2, #185a9d)' }}
+          style={{
+            width: "35%",
+            background: "linear-gradient(135deg, #43cea2, #185a9d)",
+          }}
         >
           <FiPlus /> &nbsp;Add New
         </Button>
@@ -198,41 +206,74 @@ const Catalouge = () => {
         setSelectedCatalouge={setSelectedCatalouge}
       />
 
-      <div className="mt-3">
-        <table {...getTableProps()} className="table table-bordered">
-          <thead className="thead-light">
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()}>
-                    {column.render("Header")}
+      {loading ? (
+        <div className="mt-3">
+          <table className="table table-bordered">
+            <thead className="thead-light">
+              <tr>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <th key={i}>
+                    <div
+                      className="skeleton-line"
+                      style={{ height: "20px", width: "80%" }}
+                    ></div>
                   </th>
                 ))}
               </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan="3" className="text-center">
-                  No catalouges found
-                </td>
-              </tr>
-            ) : (
-              rows.map((row) => {
-                prepareRow(row);
-                return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                    ))}
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {Array.from({ length: 5 }).map((_, rowIndex) => (
+                <tr key={rowIndex}>
+                  {Array.from({ length: 3 }).map((_, colIndex) => (
+                    <td key={colIndex}>
+                      <div
+                        className="skeleton-line"
+                        style={{ height: "18px", width: "100%" }}
+                      ></div>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="mt-3">
+          <table {...getTableProps()} className="table table-bordered">
+            <thead className="thead-light">
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th {...column.getHeaderProps()}>
+                      {column.render("Header")}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {rows.length === 0 ? (
+                <tr>
+                  <td colSpan="3" className="text-center">
+                    No catalouges found
+                  </td>
+                </tr>
+              ) : (
+                rows.map((row) => {
+                  prepareRow(row);
+                  return (
+                    <tr {...row.getRowProps()}>
+                      {row.cells.map((cell) => (
+                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      ))}
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
     </>
   );
 };

@@ -1,3 +1,4 @@
+import { Backdrop, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -10,9 +11,11 @@ function CollectionModal({show, setShow, handleShow, handleClose, getAllCollecti
 const user = useSelector((state) => state.auth);
 console.log("user", user);
 const [collectionName, setCollectionName] = useState(null);
+const [open, setOpen] = useState(false);
 
   const saveCollection = async (e) => {
    try {
+    setOpen(true);
      e.preventDefault();
      if(!collectionName || collectionName.trim() === '') {
        console.error('Collection name is required');
@@ -50,12 +53,15 @@ const [collectionName, setCollectionName] = useState(null);
         title: 'Error saving collection',
         text: error?.response?.data?.error || 'Error saving collection!',
       })
-    
    }
+    finally {
+      setOpen(false);
+    }
   }
 
   const updateCollection = async (e) => {
     try {
+      setOpen(true);
       e.preventDefault();
       if(!collectionName || collectionName.trim() === '') {
         console.error('Collection name is required');
@@ -95,8 +101,10 @@ const [collectionName, setCollectionName] = useState(null);
          title: 'Error updating collection',
          text: error?.response?.data?.error || 'Error updating collection!',
        })
-     
     }
+      finally {
+        setOpen(false);
+      }
    }
 
   return (
@@ -140,6 +148,15 @@ const [collectionName, setCollectionName] = useState(null);
           </Button>
         </Modal.Footer>
       </Modal>
+      <Backdrop
+      sx={{
+        color: "#fff",
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
+      open={open}
+    >
+      <CircularProgress color="inherit" />
+    </Backdrop>
     </>
   );
 }

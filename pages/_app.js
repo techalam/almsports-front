@@ -7,11 +7,12 @@ import Sidebar from '@/components/Sidebar'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { PersistGate } from 'redux-persist/integration/react'
+import Head from 'next/head';
 
 function AuthGuard({ children }) {  
   const router = useRouter();
   const user = useSelector((state) => state.auth.user);
-  const isLoginPage = router.pathname === '/login' || router.pathname === '/productDetails' || router.pathname === '/viewCatalogue' || router.pathname === '/viewCatalogue';
+  const isLoginPage = router.pathname === '/login' || router.pathname === '/productDetails' || router.pathname === '/viewCatalogue' || router.pathname === '/Products';
 
   // Wait for rehydration to complete before continuing
   const isHydrated = useSelector((state) => state._persist?.rehydrated);
@@ -40,6 +41,12 @@ export default function MyApp({ Component, pageProps }) {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <AuthGuard>
+        <Head>
+            <link rel="manifest" href="/manifest.json" />
+            <link rel="apple-touch-icon" href="/alm.png" />
+            <meta name="theme-color" content="#000000" />
+            <meta name="mobile-web-app-capable" content="yes" />
+          </Head>
           {showSidebar && <Sidebar />}
           <div style={{ padding: '20px 10px' }}>
             <Component {...pageProps} />

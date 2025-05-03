@@ -14,15 +14,17 @@ const Collection = () => {
   const [collections, setCollections] = useState([]);
   const user = useSelector((state) => state.auth);
   const [selectedCollection, setSelectedCollection] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleClose = () => {
     setSelectedCollection(null);
-    setShow(false)
+    setShow(false);
   };
   const handleShow = () => setShow(true);
 
   const getAllCollections = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(
         "https://almsports-node-techalams-projects.vercel.app/api/collections/collections",
         {
@@ -40,6 +42,8 @@ const Collection = () => {
         title: "Error fetching collections",
         text: error?.response?.data?.error || "Error fetching collections!",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -82,56 +86,63 @@ const Collection = () => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable({ columns, data });
 
-    const handleEdit = (item) => {
-      console.log("Editing:", item);
-      setSelectedCollection(item);
-      handleShow();
-    };
-    
-    const handleDelete = async (id) => {
-      const confirm = await Swal.fire({
-        title: "Are you sure?",
-        text: "This action cannot be undone!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!",
-      });
-    
-      if (confirm.isConfirmed) {
-        try {
-          await axios.post(
-            'https://almsports-node-techalams-projects.vercel.app/api/collections/deleteCollection',
-            {
-              id: id,
+  const handleEdit = (item) => {
+    console.log("Editing:", item);
+    setSelectedCollection(item);
+    handleShow();
+  };
+
+  const handleDelete = async (id) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        await axios.post(
+          "https://almsports-node-techalams-projects.vercel.app/api/collections/deleteCollection",
+          {
+            id: id,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user?.accessToken}`,
             },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${user?.accessToken}`,
-              },
-            }
-          );          
-          Swal.fire("Deleted!", "The collection has been removed.", "success");
-          getAllCollections(); // refresh the table
-        } catch (err) {
-          console.error("Delete error:", err);
-          Swal.fire("Error", "Could not delete collection.", "error");
-        }
+          }
+        );
+        Swal.fire("Deleted!", "The collection has been removed.", "success");
+        getAllCollections(); // refresh the table
+      } catch (err) {
+        console.error("Delete error:", err);
+        Swal.fire("Error", "Could not delete collection.", "error");
       }
-    };
-    
+    }
+  };
 
   return (
     <>
-    <Row className="d-flex justify-content-between align-items-center px-3">
-      <h5 style={{width: 'auto', margin: 0, padding: 0}}>Collections</h5>
-      <Button size="sm" variant="primary" onClick={handleShow} className="mt-2" 
-      style={{width: '35%', background: 'linear-gradient(135deg, #43cea2, #185a9d)'}}>
-        <FiPlus /> &nbsp;Add New
-      </Button>
-    </Row>
+      <Row className="d-flex justify-content-between align-items-center px-3">
+        <h5 style={{ width: "auto", margin: 0, padding: 0 }}>Collections</h5>
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={handleShow}
+          className="mt-2"
+          style={{
+            width: "35%",
+            background: "linear-gradient(135deg, #43cea2, #185a9d)",
+          }}
+        >
+          <FiPlus /> &nbsp;Add New
+        </Button>
+      </Row>
 
       <CollectionModal
         show={show}
@@ -143,39 +154,74 @@ const Collection = () => {
         setSelectedCollection={setSelectedCollection}
       />
 
-      <div className="mt-3">
-        <table {...getTableProps()} className="table table-bordered">
-          <thead className="thead-light">
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+      {loading ? (
+        <div className="mt-3">
+          <table className="table table-bordered">
+            <thead className="thead-light">
+              <tr>
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <th key={i}>
+                    <div
+                      className="skeleton-line"
+                      style={{ height: "20px", width: "80%" }}
+                    ></div>
+                  </th>
                 ))}
               </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan="3" className="text-center">
-                  No collections found
-                </td>
-              </tr>
-            ) : (
-              rows.map((row) => {
-                prepareRow(row);
-                return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                    ))}
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {Array.from({ length: 5 }).map((_, rowIndex) => (
+                <tr key={rowIndex}>
+                  {Array.from({ length: 3 }).map((_, colIndex) => (
+                    <td key={colIndex}>
+                      <div
+                        className="skeleton-line"
+                        style={{ height: "18px", width: "100%" }}
+                      ></div>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="mt-3">
+          <table {...getTableProps()} className="table table-bordered">
+            <thead className="thead-light">
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th {...column.getHeaderProps()}>
+                      {column.render("Header")}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {rows.length === 0 ? (
+                <tr>
+                  <td colSpan="3" className="text-center">
+                    No collections found
+                  </td>
+                </tr>
+              ) : (
+                rows.map((row) => {
+                  prepareRow(row);
+                  return (
+                    <tr {...row.getRowProps()}>
+                      {row.cells.map((cell) => (
+                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      ))}
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
     </>
   );
 };

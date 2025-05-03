@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
-import { MenuItem, Select } from "@mui/material";
+import { Backdrop, CircularProgress, MenuItem, Select } from "@mui/material";
 import Swal from "sweetalert2";
 
 const ProductModal = ({
@@ -19,6 +19,7 @@ const ProductModal = ({
   const [productCategory, setProductCategory] = useState("");
   const [productImages, setProductImages] = useState([]);
   const [errors, setErrors] = useState({});
+  const [open, setOpen] = useState(false);
 
   // Load selected product if editing
   useEffect(() => {
@@ -51,6 +52,7 @@ const ProductModal = ({
     formData.append("file", file);
     formData.append("upload_preset", "products"); // <- replace
     try {
+      setOpen(true);
       const response = await axios.post(
         "https://api.cloudinary.com/v1_1/ddmmklctb/image/upload", // <- replace
         formData
@@ -60,6 +62,10 @@ const ProductModal = ({
       console.error("Image upload failed:", error);
       return null;
     }
+    finally {
+      setOpen(false);
+    }
+
   };
 
   const handleRemoveImage = (url) => {
@@ -83,18 +89,19 @@ const ProductModal = ({
 
   const handleSubmit = async () => {
     // Validate all fields before submitting
-    if (!validateFields()) {
-      return;
-    }
-
-    const data = {
-      name: productName,
-      description: productDescription,
-      price: productPrice,
-      category: productCategory,
-      images: productImages,
-    };
     try {
+      setOpen(true);
+      if (!validateFields()) {
+        return;
+      }
+  
+      const data = {
+        name: productName,
+        description: productDescription,
+        price: productPrice,
+        category: productCategory,
+        images: productImages,
+      };
       if (selectedProduct) {
         await updateProduct(selectedProduct.id, data);
       } else {
@@ -114,9 +121,13 @@ const ProductModal = ({
         text: "An error occurred while saving the product.",
       });
     }
+    finally {
+      setOpen(false);
+    }
   };
 
   return (
+    <>
     <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
@@ -235,6 +246,16 @@ const ProductModal = ({
         </Button>
       </Modal.Footer>
     </Modal>
+    <Backdrop
+      sx={{
+        color: "#fff",
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
+      open={open}
+    >
+      <CircularProgress color="inherit" />
+    </Backdrop>
+    </>
   );
 };
 

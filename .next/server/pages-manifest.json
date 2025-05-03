@@ -1,13 +1,8 @@
 {
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
-  "/Products": "pages/Products.js",
-  "/addProducts": "pages/addProducts.js",
-  "/catalogues": "pages/catalogues.js",
-  "/collections": "pages/collections.js",
-  "/login": "pages/login.js",
+  "/_document": "pages/_document.js",
   "/": "pages/index.js",
   "/productDetails": "pages/productDetails.js",
-  "/viewCatalogue": "pages/viewCatalogue.js",
-  "/_document": "pages/_document.js"
+  "/login": "pages/login.js"
 }
