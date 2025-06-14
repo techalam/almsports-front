@@ -25,11 +25,11 @@ const ProductModal = ({
   // Load selected product if editing
   useEffect(() => {
     if (selectedProduct) {
-      setProductName(selectedProduct.name || "");
-      setProductDescription(selectedProduct.description || "");
-      setProductPrice(selectedProduct.price || "");
-      setProductCategory(selectedProduct.category || "");
-      setProductImages(selectedProduct.images || []);
+      setProductName(selectedProduct?.name || "");
+      setProductDescription(selectedProduct?.description || "");
+      setProductPrice(selectedProduct?.price || "");
+      setProductCategory(selectedProduct?.category || "");
+      setProductImages(selectedProduct?.images || []);
     } else {
       setProductName("");
       setProductDescription("");
@@ -141,11 +141,6 @@ const ProductModal = ({
       } else {
         await saveProduct(data);
       }
-      Swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: selectedProduct ? "Product updated successfully" : "Product created successfully",
-      });
       handleClose(); // Close modal after successful submission
     } catch (error) {
       console.error("Submit error:", error);
@@ -159,6 +154,8 @@ const ProductModal = ({
       setOpen(false);
     }
   };
+
+ 
 
   return (
     <>
