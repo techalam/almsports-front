@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { Button, Row } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import { FiEdit, FiTrash } from "react-icons/fi";
+import { endpoint } from "@/utils/factory";
 
 const Collection = () => {
   const [show, setShow] = useState(false);
@@ -26,7 +27,7 @@ const Collection = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        "https://almsports-node-techalams-projects.vercel.app/api/collections/collections",
+        `${endpoint?.baseUrl}/api/collections/collections`,
         {
           headers: {
             Authorization: `Bearer ${user?.accessToken}`,
@@ -106,7 +107,7 @@ const Collection = () => {
     if (confirm.isConfirmed) {
       try {
         await axios.post(
-          "https://almsports-node-techalams-projects.vercel.app/api/collections/deleteCollection",
+          `${endpoint?.baseUrl}/api/collections/deleteCollection`,
           {
             id: id,
           },

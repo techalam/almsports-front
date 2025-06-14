@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { setUser } from '@/redux/slices/authSlice';
 import { useRouter } from 'next/router';
+import { endpoint } from '@/utils/factory';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -19,7 +20,7 @@ export default function LoginPage() {
     setError('');
   
     try {
-      const response = await axios.post('https://almsports-node-techalams-projects.vercel.app/api/auth/login', {
+      const response = await axios.post(`${endpoint?.baseUrl}/api/auth/login`, {
         email,
         password,
       });

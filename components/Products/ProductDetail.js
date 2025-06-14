@@ -5,6 +5,7 @@ import { Carousel, Container, Row, Col, Image } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
+import { endpoint } from "@/utils/factory";
 
 const ProductDetail = () => {
   const router = useRouter();
@@ -17,7 +18,7 @@ const ProductDetail = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `https://almsports-node-techalams-projects.vercel.app/api/products/productsById?id=${id}`
+        `${endpoint?.baseUrl}/api/products/productsById?id=${id}`
       );
       setProduct(response.data);
     } catch (error) {

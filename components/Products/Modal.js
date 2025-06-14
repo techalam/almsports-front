@@ -3,6 +3,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import { Backdrop, CircularProgress, MenuItem, Select } from "@mui/material";
 import Swal from "sweetalert2";
+import { endpoint } from "@/utils/factory";
 
 const ProductModal = ({
   show,
@@ -40,12 +41,45 @@ const ProductModal = ({
 
   const handleImageUpload = async (event) => {
     const files = Array.from(event.target.files);
-    const uploadPromises = files.map((file) => uploadToCloudinary(file));
+    
+    const uploadPromises = files.map(async (file) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+      setOpen(true);
+      const response = await axios.post(`${endpoint.baseUrl}/upload`, formData);
 
-    const imageUrls = await Promise.all(uploadPromises);
-    const validUrls = imageUrls.filter(Boolean); // Remove failed uploads
-    setProductImages((prev) => [...prev, ...validUrls]);
-  };
+      // Example response:
+      // response.data.url = 'https://alm-images.21c77404eff9f0e825c0916e721539ec.r2.cloudflarestorage.com/images/filename.png'
+
+      // Extract file path from R2 URL
+      const r2Url = response.data.url;
+
+      // Get everything after the .com/ to obtain the file key
+      const fileKey = r2Url.split('.r2.cloudflarestorage.com/')[1];
+
+      // Construct public CDN URL
+      const publicUrl = `https://cdn.almsports.shop/${fileKey}`;
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Upload failed:', error);
+      return null;
+    }
+    finally {
+      setOpen(false);
+    }
+  });
+
+  const imageUrls = (await Promise.all(uploadPromises)).filter(Boolean);
+
+  console.log('Uploaded URLs:', imageUrls);
+
+  // If you want to update state:
+  setProductImages((prev) => [...prev, ...imageUrls]);
+};
+
 
   const uploadToCloudinary = async (file) => {
     const formData = new FormData();

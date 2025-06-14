@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { MenuItem, Select } from "@mui/material";
 import { useRouter } from "next/router";
+import { endpoint } from "@/utils/factory";
 
 const ProductsComponent = () => {
   const [showModal, setShowModal] = useState(false);
@@ -38,7 +39,7 @@ const ProductsComponent = () => {
   const saveProduct = async (productData) => {
     try {
       const response = await axios.post(
-        "https://almsports-node-techalams-projects.vercel.app/api/products/createProduct", // Adjust if your endpoint differs
+        `${endpoint?.baseUrl}/api/products/createProduct`, 
         productData,
         {
           headers: {
@@ -77,7 +78,7 @@ const ProductsComponent = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `https://almsports-node-techalams-projects.vercel.app/api/products/products?category=${
+        `${endpoint?.baseUrl}/api/products/products?category=${
           selectedCollection || ""
         }`,
         {
@@ -107,7 +108,7 @@ const ProductsComponent = () => {
   const getAllCollections = async () => {
     try {
       const response = await axios.get(
-        "https://almsports-node-techalams-projects.vercel.app/api/products/collections"
+        `${endpoint?.baseUrl}/api/products/collections`
       );
       console.log("All collections:", response.data);
       const collectionData = response?.data?.map((collection) => ({

@@ -18,6 +18,7 @@ import CatalougeModal from "./Modal"; // Create similar to CollectionModal
 import { useRouter } from "next/router";
 import { Share } from "@mui/icons-material";
 import { Toast, ToastContainer } from "react-bootstrap";
+import { endpoint } from "@/utils/factory";
 
 const Catalouge = () => {
   const [show, setShow] = useState(false);
@@ -39,7 +40,7 @@ const Catalouge = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        "https://almsports-node-techalams-projects.vercel.app/api/catalouges/catalouges",
+        `${endpoint?.baseUrl}/api/catalouges/catalouges`,
         {
           headers: {
             Authorization: `Bearer ${user?.accessToken}`,
@@ -79,7 +80,7 @@ const Catalouge = () => {
     if (confirm.isConfirmed) {
       try {
         await axios.post(
-          "https://almsports-node-techalams-projects.vercel.app/api/catalouges/deleteCatalouge",
+          `${endpoint?.baseUrl}/api/catalouges/deleteCatalouge`,
           { id },
           {
             headers: {

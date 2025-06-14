@@ -12,6 +12,7 @@ import {
   Image,
 } from "react-bootstrap";
 import { useRouter } from "next/router";
+import { endpoint } from "@/utils/factory";
 
 const ViewCatalogue = ({ id }) => {
   const [groupedProducts, setGroupedProducts] = useState([]);
@@ -23,7 +24,7 @@ const ViewCatalogue = ({ id }) => {
   const getCatalogueProducts = async (search = "") => {
     try {
       const response = await axios.get(
-        `https://almsports-node-techalams-projects.vercel.app/api/catalouges/getProductsUnderCatalouge`,
+        `${endpoint?.baseUrl}/api/catalouges/getProductsUnderCatalouge`,
         {
           params: {
             catalogueId: id,

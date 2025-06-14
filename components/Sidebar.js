@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { setUser } from '@/redux/slices/authSlice';
+import { endpoint } from '@/utils/factory';
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
@@ -37,7 +38,7 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post(`https://almsports-node-techalams-projects.vercel.app/api/auth/logout`, {
+      const response = await axios.post(`${endpoint?.baseUrl}/api/auth/logout`, {
         token: user?.accessToken
       });
 

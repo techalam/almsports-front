@@ -29,48 +29,48 @@ export default function Dashboard() {
   ];
 
   return (
-    <Container>
-      <h1 className="text-center my-5">
-        Under Development <br />
-        <span className="text-muted">Please check back later!</span>
-      </h1>
-    </Container>
-    // <Container className="py-5">
-    //   <h2 className="mb-4 text-center fw-bold">
-    //     Welcome <b>Parvez</b>
-    //   </h2>
-    //   <Row className="g-4 justify-content-center">
-    //     {cards.map((card, idx) => (
-    //       <Col key={idx} xs={6} sm={6} md={3}>
-    //         <Card
-    //           onClick={() => router.push(card.path)}
-    //           className="text-white text-center border-0 shadow hover-card"
-    //           style={{
-    //             cursor: "pointer",
-    //             height: "150px",
-    //             borderRadius: "20px",
-    //             background: card.gradient,
-    //             display: "flex",
-    //             alignItems: "center",
-    //             justifyContent: "center",
-    //             transition: "transform 0.2s",
-    //           }}
-    //         >
-    //           <Card.Body
-    //             style={{
-    //               display: "flex",
-    //               alignItems: "center",
-    //               justifyContent: "center",
-    //             }}
-    //           >
-    //             <Card.Title className="fs-5 fw-semibold">
-    //               {card.title}
-    //             </Card.Title>
-    //           </Card.Body>
-    //         </Card>
-    //       </Col>
-    //     ))}
-    //   </Row>
+    // <Container>
+    //   <h1 className="text-center my-5">
+    //     Under Development <br />
+    //     <span className="text-muted">Please check back later!</span>
+    //   </h1>
     // </Container>
+    <Container className="py-5">
+      <h2 className="mb-4 text-center fw-bold">
+        Welcome <b>Parvez</b>
+      </h2>
+      <Row className="g-4 justify-content-center">
+        {cards.map((card, idx) => (
+          <Col key={idx} xs={6} sm={6} md={3}>
+            <Card
+              onClick={() => router.push(card.path)}
+              className="text-white text-center border-0 shadow hover-card"
+              style={{
+                cursor: "pointer",
+                height: "150px",
+                borderRadius: "20px",
+                background: card.gradient,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                transition: "transform 0.2s",
+              }}
+            >
+              <Card.Body
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Card.Title className="fs-5 fw-semibold">
+                  {card.title}
+                </Card.Title>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+    </Container>
   );
 }

@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { FiEye } from "react-icons/fi";
 import { useRouter } from "next/router";
+import { endpoint } from "@/utils/factory";
 
 function AddProductsToCatalouge({ selectedCollection }) {
   const user = useSelector((state) => state.auth);
@@ -21,7 +22,7 @@ function AddProductsToCatalouge({ selectedCollection }) {
     try {
       setLoading(true);
       const response = await axios.get(
-        `https://almsports-node-techalams-projects.vercel.app/api/products/products?category=`,
+        `${endpoint?.baseUrl}/api/products/products?category=`,
         {
           headers: {
             Authorization: `Bearer ${user?.accessToken}`,
@@ -67,7 +68,7 @@ function AddProductsToCatalouge({ selectedCollection }) {
 
     try {
       const response = await axios.post(
-        "https://almsports-node-techalams-projects.vercel.app/api/catalouges/addProductToCatalouge",
+        `${endpoint?.baseUrl}/api/catalouges/addProductToCatalouge`,
         {
           id: selectedCollection,
           productIds: selectedProducts,

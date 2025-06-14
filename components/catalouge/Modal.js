@@ -1,3 +1,4 @@
+import { endpoint } from '@/utils/factory';
 import { Backdrop, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -36,7 +37,7 @@ function CatalougeModal({
     try {
       setOpen(true);
       const response = await axios.post(
-        'https://almsports-node-techalams-projects.vercel.app/api/catalouges/createCatalouge',
+        `${endpoint?.baseUrl}/api/catalouges/createCatalouge`,
         { name: catalougeName },
         {
           headers: {
@@ -70,7 +71,7 @@ function CatalougeModal({
     try {
       setOpen(true);
       const response = await axios.put(
-        'https://almsports-node-techalams-projects.vercel.app/api/catalouges/updateCatalouge',
+        `${endpoint?.baseUrl}/api/catalouges/updateCatalouge`,
         {
           id: selectedCatalouge?.id,
           name: catalougeName,
